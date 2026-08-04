@@ -53,12 +53,18 @@ class StudentController extends Controller
 
     public function show(string $student)
     {
-        return view('students.show',);
+        $title = "Sistem Sekolah - Detail Siswa";
+        return view('students.show', [
+            'title' => $title
+        ]);
     }
 
     public function edit(string $student)
     {
-        return view('students.edit');
+        $title = "Sistem Sekolah - Edit Siswa";
+        return view('students.edit', [
+            'title' => $title
+        ]);
     }
 
     public function update(Request $request, string $student)
