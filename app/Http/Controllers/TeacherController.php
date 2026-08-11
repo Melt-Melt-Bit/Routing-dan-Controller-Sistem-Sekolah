@@ -6,58 +6,48 @@ use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
+    /**
+     * Dummy data source for teachers. Will be replaced by the Teacher model/database on the next TP.
+     */
+    private function getTeachers(): array
+    {
+        return [
+            [
+                'id' => 1,
+                'nip' => '198501012024',
+                'name' => 'Budi Santoso',
+                'gender' => 'Laki-Laki',
+                'subject' => 'Akuntansi Dasar',
+                'phone' => '081234560001',
+                'status' => 'Aktif',
+            ],
+            [
+                'id' => 2,
+                'nip' => '198703152024',
+                'name' => 'Siti Aminah',
+                'gender' => 'Perempuan',
+                'subject' => 'Jaringan Komputer',
+                'phone' => '081234560002',
+                'status' => 'Aktif',
+            ],
+        ];
+    }
+
     public function index()
     {
         $title = "Sistem Sekolah - Daftar Guru";
-        $teachers = [
+        $teachers = $this->getTeachers();
 
-        [
-
-        'id' => 1,
-
-        'nip' => '198501012024',
-
-        'name' => 'Budi Santoso',
-
-        'gender' => 'Laki-Laki',
-
-        'subject' => 'Akuntansi Dasar',
-
-        'phone' => '081234560001',
-
-        'status' => 'Aktif',
-
-        ],
-
-        [
-
-        'id' => 2,
-
-        'nip' => '198703152024',
-
-        'name' => 'Siti Aminah',
-
-        'gender' => 'Perempuan',
-
-        'subject' => 'Jaringan Komputer',
-
-        'phone' => '081234560002',
-
-        'status' => 'Aktif',
-
-        ]
-
-        ];
         return view('teachers.index', [
             'title' => $title,
-            'teachers' => $teachers
+            'teachers' => $teachers,
         ]);
     }
 
     public function create()
     {
         return view('teachers.create', [
-            'title' => 'Sistem Sekolah - Tambah Guru'
+            'title' => 'Sistem Sekolah - Tambah Guru',
         ]);
     }
 
@@ -68,15 +58,21 @@ class TeacherController extends Controller
 
     public function show(string $teacher)
     {
+        $data = collect($this->getTeachers())->firstWhere('id', (int) $teacher);
+
         return view('teachers.show', [
-            'title' => 'Sistem Sekolah - Detail Guru'
+            'title' => 'Sistem Sekolah - Detail Guru',
+            'teacher' => $data,
         ]);
     }
 
     public function edit(string $teacher)
     {
+        $data = collect($this->getTeachers())->firstWhere('id', (int) $teacher);
+
         return view('teachers.edit', [
-            'title' => 'Sistem Sekolah - Edit Guru'
+            'title' => 'Sistem Sekolah - Edit Guru',
+            'teacher' => $data,
         ]);
     }
 

@@ -6,58 +6,48 @@ use Illuminate\Http\Request;
 
 class MajorController extends Controller
 {
+    /**
+     * Dummy data source for majors. Will be replaced by the Major model/database on the next TP.
+     */
+    private function getMajors(): array
+    {
+        return [
+            [
+                'id' => 1,
+                'code' => 'AKL',
+                'name' => 'Akuntansi dan Keuangan Lembaga',
+                'description' => 'Program keahlian yang membekali murid dengan kompetensi pencatatan dan pelaporan keuangan.',
+            ],
+            [
+                'id' => 2,
+                'code' => 'TKJ',
+                'name' => 'Teknik Komputer dan Jaringan',
+                'description' => 'Program keahlian yang membekali murid dengan kompetensi instalasi, konfigurasi, dan pemeliharaan jaringan komputer.',
+            ],
+            [
+                'id' => 3,
+                'code' => 'BD',
+                'name' => 'Bisnis Digital',
+                'description' => 'Program keahlian yang membekali murid dengan kompetensi pemasaran dan pengelolaan bisnis berbasis digital.',
+            ],
+        ];
+    }
+
     public function index()
     {
         $title = "Sistem Sekolah - Daftar Jurusan";
-        $majors = [
+        $majors = $this->getMajors();
 
-        [
-
-        'id' => 1,
-
-        'code' => 'AKL',
-
-        'name' => 'Akuntansi dan Keuangan Lembaga',
-
-        'description' => 'Program keahlian yang membekali murid dengan kompetensi pencatatan dan pelaporan keuangan.',
-
-        ],
-
-        [
-
-        'id' => 2,
-
-        'code' => 'TKJ',
-
-        'name' => 'Teknik Komputer dan Jaringan',
-
-        'description' => 'Program keahlian yang membekali murid dengan kompetensi instalasi, konfigurasi, dan pemeliharaan jaringan komputer.',
-
-        ],
-
-        [
-
-        'id' => 3,
-
-        'code' => 'BD',
-
-        'name' => 'Bisnis Digital',
-
-        'description' => 'Program keahlian yang membekali murid dengan kompetensi pemasaran dan pengelolaan bisnis berbasis digital.',
-
-        ],
-
-        ];
         return view('majors.index', [
             'title' => $title,
-            'majors' => $majors
+            'majors' => $majors,
         ]);
     }
 
     public function create()
     {
         return view('majors.create', [
-            'title' => 'Sistem Sekolah - Tambah Jurusan'
+            'title' => 'Sistem Sekolah - Tambah Jurusan',
         ]);
     }
 
@@ -68,15 +58,21 @@ class MajorController extends Controller
 
     public function show(string $major)
     {
+        $data = collect($this->getMajors())->firstWhere('id', (int) $major);
+
         return view('majors.show', [
-            'title' => 'Sistem Sekolah - Detail Jurusan'
+            'title' => 'Sistem Sekolah - Detail Jurusan',
+            'major' => $data,
         ]);
     }
 
     public function edit(string $major)
     {
+        $data = collect($this->getMajors())->firstWhere('id', (int) $major);
+
         return view('majors.edit', [
-            'title' => 'Sistem Sekolah - Edit Jurusan'
+            'title' => 'Sistem Sekolah - Edit Jurusan',
+            'major' => $data,
         ]);
     }
 
