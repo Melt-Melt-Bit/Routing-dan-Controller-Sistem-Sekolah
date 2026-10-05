@@ -2,78 +2,90 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
-    public function index()
-    {
-        $title = "Sistem Sekolah - Daftar Siswa";
-        $students = [
-            [
-                'id' => 1,
-                'nis' => '1234567890',
-                'name' => 'John Doe',
-                'class' => '12 TKJ 3',
-                'major' => 'TKJ'
-            ],
-            [
-                'id' => 2,
-                'nis' => '0987654321',
-                'name' => 'Jane Smith',
-                'class' => '11 AKL 2',
-                'major' => 'AKL'
-            ],
-            [
-                'id' => 3,
-                'nis' => '5678901234',
-                'name' => 'Michael Johnson',
-                'class' => '10 BID 1',
-                'major' => 'BID'
-            ]
-        ];
+    private const MAJORS = ['AKL', 'TKJ', 'BD'];
 
+    public function index(): View
+    {
         return view('students.index', [
-            'title' => $title ,
-            'students' => $students
+            'title' => 'Sistem Sekolah - Daftar Siswa',
+            'students' => Student::query()
+                ->select(['id', 'nis', 'name', 'class', 'major'])
+                ->orderBy('id')
+                ->get(),
         ]);
     }
 
-    public function create()
+    public function create(): View
     {
         return view('students.create', [
-            'title' => 'Sistem Sekolah - Tambah Siswa'
+            'title' => 'Sistem Sekolah - Tambah Siswa',
+            'majors' => self::MAJORS,
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        return "Melakukan penambahan data siswa";
+        $validated = $request->validate([
+            'nis' => ['required', 'string', 'max:255', 'unique:students,nis'],
+            'name' => ['required', 'string', 'max:255'],
+            'class' => ['required', 'string', 'max:255'],
+            'major' => ['required', 'string', Rule::in(self::MAJORS)],
+        ]);
+
+        Student::create($validated);
+
+        return redirect()
+            ->route('students.index')
+            ->with('success', 'Berhasil menambahkan data siswa baru.');
     }
 
-    public function show(string $student)
+    public function show(Student $student): View
     {
-        $title = "Sistem Sekolah - Detail Siswa";
         return view('students.show', [
-            'title' => $title
+            'title' => 'Sistem Sekolah - Detail Siswa',
+            'student' => $student,
         ]);
     }
 
-    public function edit(string $student)
+    public function edit(Student $student): View
     {
-        $title = "Sistem Sekolah - Edit Siswa";
         return view('students.edit', [
-            'title' => $title
+            'title' => 'Sistem Sekolah - Edit Siswa',
+            'student' => $student,
+            'majors' => self::MAJORS,
         ]);
     }
 
-    public function update(Request $request, string $student)
+    public function update(Request $request, Student $student): RedirectResponse
     {
-        return "Melakukan perubahan data siswa dengan ID: {$student}";
+        $validated = $request->validate([
+            'nis' => ['required', 'string', 'max:255', Rule::unique('students', 'nis')->ignore($student)],
+            'name' => ['required', 'string', 'max:255'],
+            'class' => ['required', 'string', 'max:255'],
+            'major' => ['required', 'string', Rule::in(self::MAJORS)],
+        ]);
+
+        $student->update($validated);
+
+        return redirect()
+            ->route('students.index')
+            ->with('success', 'Berhasil memperbarui data siswa.');
     }
 
-    public function destroy(string $student)
+    public function destroy(Student $student): RedirectResponse
     {
-        return "Menghapus data siswa dengan ID: {$student}";
+        $student->delete();
+
+        return redirect()
+            ->route('students.index')
+            ->with('success', 'Berhasil menghapus data siswa.');
     }
 }
